@@ -1,9 +1,9 @@
 class QBWC::ActiveRecord::Job < QBWC::Job
   class QbwcJob < ActiveRecord::Base
     validates :name, :uniqueness => { :case_sensitive => true }, :presence => true
-    serialize :requests, type: Hash, coder: JSON
-    serialize :request_index, type: Hash, coder: JSON
-    serialize :data, coder: JSON
+    serialize :requests, type: Hash, coder: YAML
+    serialize :request_index, type: Hash, coder: YAML
+    serialize :data, coder: YAML
 
     def to_qbwc_job
       QBWC::ActiveRecord::Job.new(name, enabled, company, worker_class, requests, data)
