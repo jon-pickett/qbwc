@@ -108,6 +108,10 @@ class QBWC::Session
     @@session = nil
   end
 
+  def add_pending_job(job)
+    @pending_jobs << job
+  end
+
   protected
 
   attr_accessor :current_job, :iterator_id
