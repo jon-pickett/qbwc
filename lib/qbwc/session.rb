@@ -110,6 +110,11 @@ class QBWC::Session
 
   def add_pending_job(job)
     @pending_jobs << job
+    @@session.save
+  end
+
+  def pending_jobs
+    @pending_jobs ||= QBWC.pending_jobs(@company, self)
   end
 
   protected
@@ -123,10 +128,6 @@ class QBWC::Session
     self.current_job = pending_jobs.first
     self.current_job.reset if reset_job && self.current_job
     return self.current_job
-  end
-
-  def pending_jobs
-    @pending_jobs ||= QBWC.pending_jobs(@company, self)
   end
 
   def complete_with_success

@@ -213,6 +213,37 @@ Similarly, it is possible to set a block to be run upon successful completion of
 
 Note that if `QBWC.on_error == :stop` and an error is encountered, this block will not be run.
 
+### To add a job to the current session ###
+You have access to the session within a worker, or you can pass the session from the initializer
+Within a worker it woould look like this:
+```ruby
+  class LocalInvoiceWorker < QBWC::Worker
+
+    def requests(job, session, data)
+      { 
+        # Your Reuest here 
+      }
+    end
+    
+    def handle_response(r, session, job, request, data) 
+      # How you want to hand your response
+      local_invoice = LocalInvoice.find(data[:invoice_id])
+      # Do Things with local invoice
+      response_txn_id = r['invoice_ret']['txn_id']
+      if local_invoice.has_payments?
+        local_invoice.payments.each do |payment|
+          payment_data {
+            #payment_data
+          }
+          job = QBWC.add_job("add_payment_#{payment.id}_for_invoice_#{local_invoice.id}".to_sym, true, FileVariable, CreatePaymentWorker, nil, payment_data)
+          session.add_pending_job(job)
+        end
+      end
+    end
+  end
+```
+
+
 ## Handling errors ##
 
 By default, when an error response is received from QuickBooks, `QBWC::Worker#handle_response` will be invoked but no further requests will be processed in the current job or in subsequent jobs. However, the job will remain persisted and so will be attempted again at next QuickBooks Web Connector session. Unless there is some intervention, presumably the job will fail again and block all remaining jobs and their requests from being serviced.
