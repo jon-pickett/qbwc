@@ -154,6 +154,12 @@ QWC
         processed_at: Time.now
       )
 
+      QBWC.logger.info "Log Record: #{log_record.inspect}"
+      if log_record.save
+        QBWC.logger.info "Log Record: #{log_record.inspect}"
+      else
+        QBWC.logger.error "Failed to save Log Record: #{log_record.errors.full_messages.join(', ')}"
+      end
       render :soap => {'tns:receiveResponseXMLResult' => (QBWC::on_error == 'continueOnError' || @session.error.nil?) ? @session.progress : -1}
     end
 
