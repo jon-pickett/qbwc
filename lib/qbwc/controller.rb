@@ -143,6 +143,17 @@ QWC
         @session.status_severity = 'Error'
       end
       @session.response = params[:response]
+      job_name = @session.instance_variable_get(:@session).current_job
+      
+      # Log the job in the QbwcJobLog
+      log_record = QBWC::ActiveRecord::JobLog.new(
+        job_name: @session.instance_variable_get(:@session).current_job,
+        company: @session.company,
+        ticket: @session.ticket,
+        error: @session.error,
+        processed_at: Time.now
+      )
+
       render :soap => {'tns:receiveResponseXMLResult' => (QBWC::on_error == 'continueOnError' || @session.error.nil?) ? @session.progress : -1}
     end
 

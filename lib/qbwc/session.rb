@@ -1,3 +1,4 @@
+#lib/qbwc/session.rb
 class QBWC::Session
 
   attr_reader :user, :company, :ticket, :progress
@@ -113,13 +114,19 @@ class QBWC::Session
     @@session.save
   end
 
+  def get_current_job
+    current_job
+  end
+
   def pending_jobs
     @pending_jobs ||= QBWC.pending_jobs(@company, self)
   end
 
-  protected
+
+
 
   attr_accessor :current_job, :iterator_id
+  protected
   attr_writer :progress
 
   private
